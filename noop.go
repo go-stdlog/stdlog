@@ -2,11 +2,11 @@ package stdlog
 
 type noop struct{}
 
-func NewNoop() Logger[any] {
+func NewNoop() Logger {
 	return &noop{}
 }
 
-func (n noop) Named(name string) Logger[any] {
+func (n noop) Named(name string) Logger {
 	return n
 }
 

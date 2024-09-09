@@ -15,11 +15,11 @@ type StdLoggerOut struct {
 	level  Level
 }
 
-func NewSTD(writer io.Writer) Logger[any] {
+func NewSTD(writer io.Writer) Logger {
 	return &StdLoggerOut{output: writer}
 }
 
-func (s *StdLoggerOut) Named(name string) Logger[any] {
+func (s *StdLoggerOut) Named(name string) Logger {
 	n := new(StdLoggerOut)
 	*n = *s
 	if n.name == "" {

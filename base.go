@@ -27,16 +27,16 @@ func (l Level) String() string {
 	}
 }
 
-type Logger[T any] interface {
+type Logger interface {
 	// Named returns a new logger with its previous name followed by a dot,
 	// followed by the provided name.
-	Named(name string) Logger[T]
+	Named(name string) Logger
 	SetLevel(level Level)
 
-	Debug(msg string, keysAndValues ...T)
-	Info(msg string, keysAndValues ...T)
-	Warning(msg string, keysAndValues ...T)
-	Error(err error, msg string, keysAndValues ...T)
-	Fatal(msg string, keysAndValues ...T)
-	FatalError(err error, msg string, keysAndValues ...T)
+	Debug(msg string, keysAndValues ...any)
+	Info(msg string, keysAndValues ...any)
+	Warning(msg string, keysAndValues ...any)
+	Error(err error, msg string, keysAndValues ...any)
+	Fatal(msg string, keysAndValues ...any)
+	FatalError(err error, msg string, keysAndValues ...any)
 }
