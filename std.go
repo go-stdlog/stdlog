@@ -81,7 +81,6 @@ func formatKeysValsStd(kvs []any) string {
 	res := make([]string, len(kvs)/2)
 	idx := 0
 	for i := 0; i < len(kvs)-1; i += 2 {
-		res[i] = fmt.Sprintf("%v=%v", kvs[i], kvs[i+1])
 		res[idx] = fmt.Sprintf("%v=%v", kvs[i], kvs[i+1])
 		idx++
 	}
