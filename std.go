@@ -66,11 +66,11 @@ func (s *StdLoggerOut) Do(ts, caller, bt, msg string, level Level, err error, kv
 	ensureKV(level, kvs)
 
 	if err != nil {
-		kvs = append(kvs, []any{"error", err})
+		kvs = append(kvs, "error", err)
 	}
 
 	if bt != "" {
-		kvs = append(kvs, []any{"backtrace", bt})
+		kvs = append(kvs, "backtrace", bt)
 	}
 
 	message := fmt.Sprintf("%s %s %s %s %s %s\n", ts, level.String(), s.name, caller, msg, formatKeysValsStd(kvs))
