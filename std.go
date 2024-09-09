@@ -66,11 +66,11 @@ func (s *StdLoggerOut) Do(ts, caller, bt, msg string, level Level, err error, kv
 	ensureKV(level, kvs)
 
 	if err != nil {
-		kvs = append(kvs, []any{"error", err})
+		kvs = append(kvs, "error", err)
 	}
 
 	if bt != "" {
-		kvs = append(kvs, []any{"backtrace", bt})
+		kvs = append(kvs, "backtrace", bt)
 	}
 
 	message := fmt.Sprintf("%s %s %s %s %s %s\n", ts, level.String(), s.name, caller, msg, formatKeysValsStd(kvs))
@@ -79,8 +79,11 @@ func (s *StdLoggerOut) Do(ts, caller, bt, msg string, level Level, err error, kv
 
 func formatKeysValsStd(kvs []any) string {
 	res := make([]string, len(kvs)/2)
+	idx := 0
 	for i := 0; i < len(kvs)-1; i += 2 {
 		res[i] = fmt.Sprintf("%v=%v", kvs[i], kvs[i+1])
+		res[idx] = fmt.Sprintf("%v=%v", kvs[i], kvs[i+1])
+		idx++
 	}
 	return strings.Join(res, " ")
 }
