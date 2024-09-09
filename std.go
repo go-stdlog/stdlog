@@ -34,15 +34,15 @@ func (s *StdLoggerOut) Named(name string) Logger {
 func (s *StdLoggerOut) SetLevel(level Level) { s.level = level }
 
 func (s *StdLoggerOut) Debug(msg string, kvs ...any) {
-	s.Do(now(), "", caller(), msg, LevelDebug, nil, kvs...)
+	s.Do(now(), caller(), "", msg, LevelDebug, nil, kvs...)
 }
 
 func (s *StdLoggerOut) Info(msg string, kvs ...any) {
-	s.Do(now(), "", caller(), msg, LevelInfo, nil, kvs...)
+	s.Do(now(), caller(), "", msg, LevelInfo, nil, kvs...)
 }
 
 func (s *StdLoggerOut) Warning(msg string, kvs ...any) {
-	s.Do(now(), "", caller(), msg, LevelWarning, nil, kvs...)
+	s.Do(now(), caller(), "", msg, LevelWarning, nil, kvs...)
 }
 
 func (s *StdLoggerOut) Error(err error, msg string, kvs ...any) {
