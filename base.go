@@ -17,7 +17,7 @@ func (l Level) String() string {
 	case LevelInfo:
 		return "INFO"
 	case LevelWarning:
-		return "WARNING"
+		return "WARN"
 	case LevelError:
 		return "ERROR"
 	case LevelFatal:
