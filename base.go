@@ -31,7 +31,12 @@ type Logger interface {
 	// Named returns a new logger with its previous name followed by a dot,
 	// followed by the provided name.
 	Named(name string) Logger
+
+	// SetLevel sets the logger level.
 	SetLevel(level Level)
+
+	// Leveled returns a copy of the current logger with a different level.
+	Leveled(level Level) Logger
 
 	Debug(msg string, keysAndValues ...any)
 	Info(msg string, keysAndValues ...any)

@@ -34,6 +34,12 @@ func (s *stdLoggerText) Named(name string) Logger {
 
 func (s *stdLoggerText) SetLevel(level Level) { s.level = level }
 
+func (s *stdLoggerText) Leveled(level Level) Logger {
+	cp := ptrCopy(s)
+	cp.level = level
+	return cp
+}
+
 func (s *stdLoggerText) Debug(msg string, kvs ...any) {
 	if s.level != LevelDebug {
 		return

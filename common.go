@@ -39,3 +39,9 @@ func stackTrace(skip int) string {
 	}
 	return strings.Join(data, "\n")
 }
+
+func ptrCopy[T any](src *T) *T {
+	var res T
+	res = *src
+	return &res
+}
