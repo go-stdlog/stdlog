@@ -32,6 +32,12 @@ func (s *stdLoggerJSON) Named(name string) Logger {
 
 func (s *stdLoggerJSON) SetLevel(level Level) { s.level = level }
 
+func (s *stdLoggerJSON) Leveled(level Level) Logger {
+	cp := ptrCopy(s)
+	cp.level = level
+	return cp
+}
+
 func (s *stdLoggerJSON) Debug(msg string, kvs ...any) {
 	if s.level != LevelDebug {
 		return
