@@ -35,6 +35,9 @@ type Logger interface {
 	// SetLevel sets the logger level.
 	SetLevel(level Level)
 
+	// Leveled returns a copy of the current logger with a different level.
+	Leveled(level Level) Logger
+
 	Debug(msg string, keysAndValues ...any)
 	Info(msg string, keysAndValues ...any)
 	Warning(msg string, keysAndValues ...any)
