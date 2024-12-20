@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"time"
 )
 
@@ -73,6 +74,7 @@ func (s *stdLoggerJSON) Fatal(msg string, kvs ...any) {
 	ev := getEventPool().prepare(LevelFatal, msg, kvs)
 	ev.Backtrace = stackTrace(1)
 	s.do(ev)
+	os.Exit(1)
 }
 
 func (s *stdLoggerJSON) FatalError(err error, msg string, kvs ...any) {
@@ -80,6 +82,7 @@ func (s *stdLoggerJSON) FatalError(err error, msg string, kvs ...any) {
 	ev.Error = err
 	ev.Backtrace = stackTrace(1)
 	s.do(ev)
+	os.Exit(1)
 }
 
 func (s *stdLoggerJSON) do(ev *stdLoggerEvent) {
