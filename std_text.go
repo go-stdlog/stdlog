@@ -3,6 +3,7 @@ package stdlog
 import (
 	"fmt"
 	"io"
+	"os"
 	"slices"
 	"strings"
 )
@@ -75,6 +76,7 @@ func (s *stdLoggerText) Fatal(msg string, kvs ...any) {
 	ev := getEventPool().prepare(LevelFatal, msg, kvs)
 	ev.Backtrace = stackTrace(3)
 	s.do(ev)
+	os.Exit(1)
 }
 
 func (s *stdLoggerText) FatalError(err error, msg string, kvs ...any) {
@@ -82,6 +84,7 @@ func (s *stdLoggerText) FatalError(err error, msg string, kvs ...any) {
 	ev.Error = err
 	ev.Backtrace = stackTrace(3)
 	s.do(ev)
+	os.Exit(1)
 }
 
 func (s *stdLoggerText) do(ev *stdLoggerEvent) {
