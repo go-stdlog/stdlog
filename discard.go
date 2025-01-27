@@ -23,3 +23,5 @@ func (n noop) Error(err error, msg string, keysAndValues ...any) {}
 func (n noop) Fatal(msg string, keysAndValues ...any) { os.Exit(1) }
 
 func (n noop) FatalError(err error, msg string, keysAndValues ...any) { os.Exit(1) }
+
+func (n noop) WithFields(keysAndValues ...any) Logger { return n }
