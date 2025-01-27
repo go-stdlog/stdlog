@@ -38,6 +38,10 @@ type Logger interface {
 	// Leveled returns a copy of the current logger with a different level.
 	Leveled(level Level) Logger
 
+	// WithFields returns a copy of the current logger with extra provided
+	// fields that will be present in every emitted log message.
+	WithFields(keysAndValues ...any) Logger
+
 	Debug(msg string, keysAndValues ...any)
 	Info(msg string, keysAndValues ...any)
 	Warning(msg string, keysAndValues ...any)

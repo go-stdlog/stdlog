@@ -2,15 +2,15 @@ package stdlog
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 )
 
-func ensureKV(ev *stdLoggerEvent) {
-	if l := len(ev.kvs); l != 0 && l%2 != 0 {
-		panic(fmt.Errorf("uneven keys and values passed to %s", ev.Level.String()))
-	}
+type kv struct {
+	k string
+	v any
 }
 
 func caller(skip int) string {
@@ -32,16 +32,21 @@ func stackTrace(skip int) string {
 	var data []string
 	for {
 		frame, more := frames.Next()
-		data = append(data, fmt.Sprintf("%s\n\t%s:%d\n", frame.Function, frame.File, frame.Line))
+		if frame.Function == "" {
+			data = append(data, fmt.Sprintf("%s:%d\n", frame.File, frame.Line))
+		} else {
+			data = append(data, fmt.Sprintf("%s\n\t%s:%d\n", frame.Function, frame.File, frame.Line))
+		}
+
 		if !more {
 			break
 		}
 	}
-	return strings.Join(data, "\n")
+	return strings.Join(data, "")
 }
 
-func ptrCopy[T any](src *T) *T {
-	var res T
-	res = *src
-	return &res
+func stdField(k, v any) *kv {
+	return &kv{fmt.Sprintf("%v", k), v}
 }
+
+var stdExit func(int) = os.Exit
