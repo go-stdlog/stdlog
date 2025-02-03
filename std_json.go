@@ -12,7 +12,7 @@ func NewStdJSON(writer io.Writer) Logger {
 	}
 	b.handler = func(name string, out io.Writer, ev *stdLoggerEvent) {
 		defer putEventPool(ev)
-		callerLocation := caller(2)
+		callerLocation := caller(3)
 		data := map[string]any{
 			"time":  ev.Timestamp.UTC().Format(time.RFC3339Nano),
 			"level": ev.Level.String(),
