@@ -11,6 +11,7 @@ type stdBase struct {
 	level      Level
 	baseFields []*kv
 	handler    func(name string, out io.Writer, ev *stdLoggerEvent)
+	stackSkip  uint
 }
 
 func (s *stdBase) dup() *stdBase {
@@ -20,6 +21,7 @@ func (s *stdBase) dup() *stdBase {
 		level:      s.level,
 		baseFields: make([]*kv, 0, len(s.baseFields)),
 		handler:    s.handler,
+		stackSkip:  s.stackSkip,
 	}
 	for _, v := range s.baseFields {
 		n.baseFields = append(n.baseFields, v)
@@ -34,6 +36,13 @@ func (s *stdBase) Named(name string) Logger {
 	} else {
 		n.name = s.name + "." + name
 	}
+
+	return n
+}
+
+func (s *stdBase) Skipping(level uint) Logger {
+	n := s.dup()
+	n.stackSkip = level
 
 	return n
 }
@@ -64,42 +73,42 @@ func (s *stdBase) Debug(msg string, kvs ...any) {
 	if s.level != LevelDebug {
 		return
 	}
-	s.handler(s.name, s.output, getEventPool().prepare(LevelDebug, msg, s.baseFields, kvs))
+	s.handler(s.name, s.output, getEventPool().prepare(LevelDebug, msg, s.baseFields, kvs, s.stackSkip))
 }
 
 func (s *stdBase) Info(msg string, kvs ...any) {
 	if s.level > LevelInfo {
 		return
 	}
-	s.handler(s.name, s.output, getEventPool().prepare(LevelInfo, msg, s.baseFields, kvs))
+	s.handler(s.name, s.output, getEventPool().prepare(LevelInfo, msg, s.baseFields, kvs, s.stackSkip))
 }
 
 func (s *stdBase) Warning(msg string, kvs ...any) {
 	if s.level > LevelWarning {
 		return
 	}
-	s.handler(s.name, s.output, getEventPool().prepare(LevelWarning, msg, s.baseFields, kvs))
+	s.handler(s.name, s.output, getEventPool().prepare(LevelWarning, msg, s.baseFields, kvs, s.stackSkip))
 }
 
 func (s *stdBase) Error(err error, msg string, kvs ...any) {
 	if s.level > LevelError {
 		return
 	}
-	ev := getEventPool().prepare(LevelError, msg, s.baseFields, kvs)
+	ev := getEventPool().prepare(LevelError, msg, s.baseFields, kvs, s.stackSkip)
 	ev.Error = err
 	ev.Backtrace = stackTrace(3)
 	s.handler(s.name, s.output, ev)
 }
 
 func (s *stdBase) Fatal(msg string, kvs ...any) {
-	ev := getEventPool().prepare(LevelFatal, msg, s.baseFields, kvs)
+	ev := getEventPool().prepare(LevelFatal, msg, s.baseFields, kvs, s.stackSkip)
 	ev.Backtrace = stackTrace(3)
 	s.handler(s.name, s.output, ev)
 	stdExit(1)
 }
 
 func (s *stdBase) FatalError(err error, msg string, kvs ...any) {
-	ev := getEventPool().prepare(LevelFatal, msg, s.baseFields, kvs)
+	ev := getEventPool().prepare(LevelFatal, msg, s.baseFields, kvs, s.stackSkip)
 	ev.Error = err
 	ev.Backtrace = stackTrace(3)
 	s.handler(s.name, s.output, ev)

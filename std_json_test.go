@@ -159,4 +159,13 @@ func TestStdJSON(t *testing.T) {
 		assert.NotNil(t, dec["backtrace"])
 		assert.Equal(t, "error", dec["error"])
 	})
+	t.Run("Skipping", func(t *testing.T) {
+		drainStdExit()
+		l, out := makeLogger()
+		l = l.Skipping(1).Named("a").Named("b").WithFields("foo", "bar")
+		l.Info("Hello, World!")
+		dec := decode(t, out)
+		assert.Equal(t, "Hello, World!", dec["msg"])
+		assert.Equal(t, "INFO", dec["level"])
+	})
 }

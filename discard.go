@@ -12,6 +12,8 @@ func (n noop) SetLevel(level Level) {}
 
 func (n noop) Leveled(level Level) Logger { return n }
 
+func (n noop) Skipping(count uint) Logger { return n }
+
 func (n noop) Debug(msg string, keysAndValues ...any) {}
 
 func (n noop) Info(msg string, keysAndValues ...any) {}

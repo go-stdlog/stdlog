@@ -42,6 +42,10 @@ type Logger interface {
 	// fields that will be present in every emitted log message.
 	WithFields(keysAndValues ...any) Logger
 
+	// Skipping returns a copy of the current logger that will skip a given
+	// number of call stacks.
+	Skipping(count uint) Logger
+
 	Debug(msg string, keysAndValues ...any)
 	Info(msg string, keysAndValues ...any)
 	Warning(msg string, keysAndValues ...any)
