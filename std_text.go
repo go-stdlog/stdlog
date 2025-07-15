@@ -14,7 +14,7 @@ func NewStd(writer io.Writer) Logger {
 		output: writer,
 		handler: func(name string, out io.Writer, ev *stdLoggerEvent) {
 			defer putEventPool(ev)
-			callerLocation := caller(3)
+			callerLocation := caller(3 + int(ev.StackSkip))
 			comps := []string{
 				ev.Timestamp.Format(timeFormat),
 				"[" + ev.Level.String() + "]",

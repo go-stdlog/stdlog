@@ -7,6 +7,7 @@ import (
 
 type stdLoggerEvent struct {
 	Level     Level
+	StackSkip uint
 	Timestamp time.Time
 	Backtrace string
 	Message   string
@@ -14,10 +15,11 @@ type stdLoggerEvent struct {
 	kvs       []*kv
 }
 
-func (e *stdLoggerEvent) prepare(lvl Level, message string, basekvs []*kv, kvs []any) *stdLoggerEvent {
+func (e *stdLoggerEvent) prepare(lvl Level, message string, basekvs []*kv, kvs []any, stackSkip uint) *stdLoggerEvent {
 	e.Level = lvl
 	e.Timestamp = time.Now()
 	e.Message = message
+	e.StackSkip = stackSkip
 	newSize := len(basekvs) + (len(kvs) / 2)
 	e.kvs = make([]*kv, 0, newSize)
 	for i := 0; i < len(basekvs); i++ {

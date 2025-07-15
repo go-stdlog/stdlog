@@ -170,4 +170,12 @@ func TestStdText(t *testing.T) {
 		assertPattern(t, out, `Hello, World! foo="bar" error="error"\n(\t[a-zA-Z\.0-9/-]+\n\t{2}[/a-zA-Z0-9_.]+(?::\d+)?\n?)*`)
 		assertLevel(t, out, "FATAL")
 	})
+	t.Run("Skipping", func(t *testing.T) {
+		drainStdExit()
+		l, out := makeLogger()
+		l = l.Skipping(1).Named("a").Named("b").WithFields("foo", "bar")
+		l.Info("Hello, World!")
+		assertPattern(t, out, `Hello, World! foo="bar"\n(\t[a-zA-Z\.0-9/-]+\n\t{2}[/a-zA-Z0-9_.]+(?::\d+)?\n?)*`)
+		assertLevel(t, out, "INFO")
+	})
 }

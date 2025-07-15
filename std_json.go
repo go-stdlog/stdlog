@@ -28,7 +28,7 @@ func NewStdJSON(writer io.Writer) Logger {
 	}
 	b.handler = func(name string, out io.Writer, ev *stdLoggerEvent) {
 		defer putEventPool(ev)
-		callerLocation := caller(3)
+		callerLocation := caller(3 + int(ev.StackSkip))
 		size := 4
 		if len(name) > 0 {
 			size++
