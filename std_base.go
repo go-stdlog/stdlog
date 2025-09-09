@@ -48,9 +48,7 @@ func (s *stdBase) Skipping(level uint) Logger {
 }
 
 func (s *stdBase) WithFields(keysAndValues ...any) Logger {
-	if len(keysAndValues)%2 != 0 {
-		panic("uneven number of keys and values")
-	}
+	assertKvs("WithFields", keysAndValues...)
 
 	n := s.dup()
 	n.baseFields = slices.Grow(n.baseFields, len(keysAndValues)/2)
@@ -70,6 +68,7 @@ func (s *stdBase) Leveled(level Level) Logger {
 }
 
 func (s *stdBase) Debug(msg string, kvs ...any) {
+	assertKvs(LevelDebug.String(), kvs...)
 	if s.level != LevelDebug {
 		return
 	}
@@ -77,6 +76,7 @@ func (s *stdBase) Debug(msg string, kvs ...any) {
 }
 
 func (s *stdBase) Info(msg string, kvs ...any) {
+	assertKvs(LevelInfo.String(), kvs...)
 	if s.level > LevelInfo {
 		return
 	}
@@ -84,6 +84,7 @@ func (s *stdBase) Info(msg string, kvs ...any) {
 }
 
 func (s *stdBase) Warning(msg string, kvs ...any) {
+	assertKvs(LevelWarning.String(), kvs...)
 	if s.level > LevelWarning {
 		return
 	}
@@ -91,6 +92,7 @@ func (s *stdBase) Warning(msg string, kvs ...any) {
 }
 
 func (s *stdBase) Error(err error, msg string, kvs ...any) {
+	assertKvs(LevelError.String(), kvs...)
 	if s.level > LevelError {
 		return
 	}
@@ -101,6 +103,7 @@ func (s *stdBase) Error(err error, msg string, kvs ...any) {
 }
 
 func (s *stdBase) Fatal(msg string, kvs ...any) {
+	assertKvs(LevelFatal.String(), kvs...)
 	ev := getEventPool().prepare(LevelFatal, msg, s.baseFields, kvs, s.stackSkip)
 	ev.Backtrace = stackTrace(3)
 	s.handler(s.name, s.output, ev)
@@ -108,9 +111,16 @@ func (s *stdBase) Fatal(msg string, kvs ...any) {
 }
 
 func (s *stdBase) FatalError(err error, msg string, kvs ...any) {
+	assertKvs(LevelFatal.String()+"_ERROR", kvs...)
 	ev := getEventPool().prepare(LevelFatal, msg, s.baseFields, kvs, s.stackSkip)
 	ev.Error = err
 	ev.Backtrace = stackTrace(3)
 	s.handler(s.name, s.output, ev)
 	stdExit(1)
+}
+
+func assertKvs(method string, kvs ...any) {
+	if l := len(kvs); l > 0 && l%2 != 0 {
+		panic("uneven number of key-value pairs passed to " + method)
+	}
 }
