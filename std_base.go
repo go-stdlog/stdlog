@@ -6,22 +6,24 @@ import (
 )
 
 type stdBase struct {
-	output     io.Writer
-	name       string
-	level      Level
-	baseFields []*kv
-	handler    func(name string, out io.Writer, ev *stdLoggerEvent)
-	stackSkip  uint
+	output        io.Writer
+	name          string
+	level         Level
+	baseFields    []*kv
+	handler       func(name string, out io.Writer, ev *stdLoggerEvent)
+	stackSkip     uint
+	fatalBehavior FatalBehavior
 }
 
 func (s *stdBase) dup() *stdBase {
 	n := &stdBase{
-		output:     s.output,
-		name:       s.name,
-		level:      s.level,
-		baseFields: make([]*kv, 0, len(s.baseFields)),
-		handler:    s.handler,
-		stackSkip:  s.stackSkip,
+		output:        s.output,
+		name:          s.name,
+		level:         s.level,
+		baseFields:    make([]*kv, 0, len(s.baseFields)),
+		handler:       s.handler,
+		stackSkip:     s.stackSkip,
+		fatalBehavior: s.fatalBehavior,
 	}
 	for _, v := range s.baseFields {
 		n.baseFields = append(n.baseFields, v)
@@ -40,9 +42,9 @@ func (s *stdBase) Named(name string) Logger {
 	return n
 }
 
-func (s *stdBase) Skipping(level uint) Logger {
+func (s *stdBase) Skipping(count uint) Logger {
 	n := s.dup()
-	n.stackSkip = level
+	n.stackSkip = count
 
 	return n
 }
@@ -61,6 +63,8 @@ func (s *stdBase) WithFields(keysAndValues ...any) Logger {
 
 func (s *stdBase) SetLevel(level Level) { s.level = level }
 
+func (s *stdBase) SetFatalBehavior(behavior FatalBehavior) { s.fatalBehavior = behavior }
+
 func (s *stdBase) Leveled(level Level) Logger {
 	n := s.dup()
 	n.level = level
@@ -69,7 +73,7 @@ func (s *stdBase) Leveled(level Level) Logger {
 
 func (s *stdBase) Debug(msg string, kvs ...any) {
 	assertKvs(LevelDebug.String(), kvs...)
-	if s.level != LevelDebug {
+	if s.level > LevelDebug {
 		return
 	}
 	s.handler(s.name, s.output, getEventPool().prepare(LevelDebug, msg, s.baseFields, kvs, s.stackSkip))
@@ -107,7 +111,11 @@ func (s *stdBase) Fatal(msg string, kvs ...any) {
 	ev := getEventPool().prepare(LevelFatal, msg, s.baseFields, kvs, s.stackSkip)
 	ev.Backtrace = stackTrace(3)
 	s.handler(s.name, s.output, ev)
-	stdExit(1)
+	if s.fatalBehavior == FatalExits {
+		stdExit(1)
+	} else {
+		panic(msg)
+	}
 }
 
 func (s *stdBase) FatalError(err error, msg string, kvs ...any) {
@@ -116,7 +124,11 @@ func (s *stdBase) FatalError(err error, msg string, kvs ...any) {
 	ev.Error = err
 	ev.Backtrace = stackTrace(3)
 	s.handler(s.name, s.output, ev)
-	stdExit(1)
+	if s.fatalBehavior == FatalExits {
+		stdExit(1)
+	} else {
+		panic(msg)
+	}
 }
 
 func assertKvs(method string, kvs ...any) {
