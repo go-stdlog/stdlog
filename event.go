@@ -22,7 +22,7 @@ func (e *stdLoggerEvent) prepare(lvl Level, message string, basekvs []*kv, kvs [
 	e.StackSkip = stackSkip
 	newSize := len(basekvs) + (len(kvs) / 2)
 	e.kvs = make([]*kv, 0, newSize)
-	for i := 0; i < len(basekvs); i++ {
+	for i := range basekvs {
 		e.kvs = append(e.kvs, basekvs[i])
 	}
 	for i := 0; i < len(kvs); i += 2 {
@@ -33,7 +33,7 @@ func (e *stdLoggerEvent) prepare(lvl Level, message string, basekvs []*kv, kvs [
 	return e
 }
 
-var eventPool = sync.Pool{New: func() interface{} { return &stdLoggerEvent{} }}
+var eventPool = sync.Pool{New: func() any { return &stdLoggerEvent{} }}
 
 func getEventPool() *stdLoggerEvent {
 	return eventPool.Get().(*stdLoggerEvent)
